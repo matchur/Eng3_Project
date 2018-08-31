@@ -1,0 +1,240 @@
+﻿--Script oficial
+--Sequences
+CREATE SEQUENCE public.seq_churros INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1;
+CREATE SEQUENCE public.seq_func INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1;
+CREATE SEQUENCE public.seq_ing INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1;
+CREATE SEQUENCE public.seq_itensdiversos INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1;
+CREATE SEQUENCE public.seq_despesas INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1;
+CREATE SEQUENCE public.seq_caixa INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1;
+CREATE SEQUENCE public.seq_parcelades INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1;
+CREATE SEQUENCE public.seq_mesa INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1;
+CREATE SEQUENCE public.seq_pedido INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1;
+
+--Table Funcionario
+CREATE TABLE public.funcionario
+(
+    cod_func integer NOT NULL,
+    nome_func character varying(40) COLLATE pg_catalog."default" NOT NULL,
+    rg_func character varying(12) COLLATE pg_catalog."default" NOT NULL,
+    cpf_func character varying(18) COLLATE pg_catalog."default" NOT NULL,
+    email_func character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    dtnasc_func date NOT NULL,
+    sal_fun numeric(6,2) NOT NULL,
+    celular_func character varying(15) COLLATE pg_catalog."default",
+    endereco_func character varying(50) COLLATE pg_catalog."default",
+    bairro_func character varying(40) COLLATE pg_catalog."default",
+    cidade_func character varying(40) COLLATE pg_catalog."default",
+    num_func integer,
+    senha_func character varying(40) COLLATE pg_catalog."default" NOT NULL,
+    nivel_func integer NOT NULL,
+    CONSTRAINT pk_funcionario PRIMARY KEY (cod_func)
+);
+
+--Table Churros
+CREATE TABLE churros
+(
+  cod_churros integer NOT NULL,
+  desc_churros character varying(20),
+  preco_churros numeric(6,2),
+  obs_churros character varying(60),
+  quantidade integer,
+  CONSTRAINT pk_churros PRIMARY KEY (cod_churros)
+);
+
+--Table Ingredientes
+CREATE TABLE public.ingredientes
+(
+    cod_ing integer NOT NULL,
+    desc_ing character varying(20) COLLATE pg_catalog."default",
+    qtdes_ing integer,
+    obs_ing character varying(60) COLLATE pg_catalog."default",
+    qtdun_ing numeric(6,3),
+    tpprod_ing character varying(2) COLLATE pg_catalog."default",
+    CONSTRAINT pk_ingredientes PRIMARY KEY (cod_ing)
+);
+
+--Table Churros_Ingredientes
+CREATE TABLE public.churros_ingredientes
+(
+    cod_churros integer NOT NULL,
+    cod_ing integer NOT NULL,
+    qtd_chuing numeric(6,3),
+    CONSTRAINT pk_churros_ingredienteshue PRIMARY KEY (cod_churros, cod_ing),
+    CONSTRAINT fk_churros_ingredientes_churros1 FOREIGN KEY (cod_churros)
+        REFERENCES public.churros (cod_churros) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT fk_churros_ingredientes_ingredientes1 FOREIGN KEY (cod_ing)
+        REFERENCES public.ingredientes (cod_ing) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
+--Table Parametrização
+CREATE TABLE public.parametrizacao
+(
+    codigo integer NOT NULL,
+    razao character varying(30) COLLATE pg_catalog."default",
+    cor character varying(30) COLLATE pg_catalog."default",
+    site character varying(50) COLLATE pg_catalog."default",
+    email character varying(50) COLLATE pg_catalog."default",
+    telefone character varying(15) COLLATE pg_catalog."default",
+    endereco character varying(50) COLLATE pg_catalog."default",
+    cep character varying(15) COLLATE pg_catalog."default",
+    uf character varying(3) COLLATE pg_catalog."default",
+    cidade character varying(20) COLLATE pg_catalog."default",
+    numero integer,
+    complemento character varying(50) COLLATE pg_catalog."default",
+    bairro character varying(30) COLLATE pg_catalog."default",
+    foto bytea,
+    nome_fantasia character varying(50) COLLATE pg_catalog."default",
+    CONSTRAINT pk_cod_parametrizacao PRIMARY KEY (codigo)
+);
+
+--Table Despesas
+CREATE TABLE public.despesas
+(
+    cod integer NOT NULL,
+    valor numeric(10,2) NOT NULL,
+    descricao character varying(50) COLLATE pg_catalog."default",
+    obs character varying(200) COLLATE pg_catalog."default",
+    codfunc integer NOT NULL,
+    parcelas integer NOT NULL,
+    sinal integer,
+    CONSTRAINT pk_coddesp PRIMARY KEY (cod),
+    CONSTRAINT fk_codfunc FOREIGN KEY (codfunc)
+        REFERENCES public.funcionario (cod_func) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+
+--Table Caixa
+CREATE TABLE public.caixa
+(
+    cod_caixa integer NOT NULL,
+    data date NOT NULL,
+    valor_abertura numeric(6,2) NOT NULL,
+    valor_fechamento numeric(6,2) NOT NULL,
+    CONSTRAINT pk_caixa PRIMARY KEY (cod_caixa)
+);
+
+--Table parcelaDesp
+CREATE TABLE public.parceladesp
+(
+    cod_pag integer NOT NULL,
+    obs_pag character varying(60) COLLATE pg_catalog."default",
+    despesa_cod integer NOT NULL,
+    parcela integer NOT NULL,
+    dt_vencimento date,
+    dt_pagamento date,
+    caixa_cod integer NOT NULL,
+    valor numeric(10,2) NOT NULL,
+    CONSTRAINT pk_parceladesp PRIMARY KEY (cod_pag, despesa_cod),
+    CONSTRAINT fk_parceladesp FOREIGN KEY (despesa_cod)
+        REFERENCES public.despesas (cod) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT fk_parceladesp2 FOREIGN KEY (caixa_cod)
+        REFERENCES public.caixa (cod_caixa) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
+CREATE TABLE itensdiversos
+(
+  codigo integer NOT NULL,
+  nome character varying(30) NOT NULL,
+  valor numeric(5,2),
+  tipo character varying(30),
+  fornecedor character varying(30),
+  quantidade integer,
+  CONSTRAINT pk_codigo_itensdiversos PRIMARY KEY (codigo)
+);
+
+CREATE TABLE mesa
+(
+  cod_mesa integer NOT NULL,
+  descricao character varying(45),
+  statuc character(1),
+  CONSTRAINT pk_mesa_codigo PRIMARY KEY (cod_mesa)
+);
+
+CREATE TABLE public.pedidos
+(
+    cod_ped integer NOT NULL,
+    desconto numeric(6,2),
+    funcionarios_cod_func integer NOT NULL,
+    total double precision,
+    codigo_mesa integer,
+    data date,
+    status character(1) COLLATE pg_catalog."default",
+    CONSTRAINT pk_pedido PRIMARY KEY (cod_ped),
+    CONSTRAINT fk_pedido_funcionarios FOREIGN KEY (funcionarios_cod_func)
+        REFERENCES public.funcionario (cod_func) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT pedidos_codigo_mesa_fkey FOREIGN KEY (codigo_mesa)
+        REFERENCES public.mesa (cod_mesa) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
+CREATE TABLE vendas
+(
+  cod_venda integer NOT NULL,
+  data_venda date,
+  pedidos_cod_ped integer NOT NULL,
+  pagamento character varying,
+  CONSTRAINT pk_vendas_cod PRIMARY KEY (cod_venda),
+  CONSTRAINT fk_pedidos_cod_ped FOREIGN KEY (pedidos_cod_ped)
+      REFERENCES pedidos (cod_ped) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+
+CREATE TABLE pedidochurros
+(
+  churros_cod_chu integer NOT NULL,
+  pedido_cod_ped integer NOT NULL,
+  qtde integer,
+  valor_unit numeric(8,2),
+  CONSTRAINT fk_pedidochurros_chucod FOREIGN KEY (churros_cod_chu)
+      REFERENCES churros (cod_churros) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT fk_pedidochurros_pedcod FOREIGN KEY (pedido_cod_ped)
+      REFERENCES pedidos (cod_ped) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+
+CREATE TABLE pedidoitens
+(
+  pedidos_cod integer NOT NULL,
+  itensdiversos_cod integer NOT NULL,
+  qtde integer,
+  valor_unit numeric(8,2),
+  CONSTRAINT fk_pedidoitens_itendcod FOREIGN KEY (itensdiversos_cod)
+      REFERENCES itensdiversos (codigo) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT fk_pedidoitens_pedcod FOREIGN KEY (pedidos_cod)
+      REFERENCES pedidos (cod_ped) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+
+CREATE TABLE public.produtos_mesa
+(
+    cod_itensdiv integer,
+    cod_churros integer,
+    cod_mesa integer NOT NULL,
+    preco_pago numeric(6,2),
+    desconto numeric(6,2),
+    qtd_prod integer,
+    cod_pedido integer NOT NULL,
+    status character varying(1) COLLATE pg_catalog."default",
+    CONSTRAINT fk_mesa FOREIGN KEY (cod_mesa)
+        REFERENCES public.mesa (cod_mesa) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT fk_pedido FOREIGN KEY (cod_pedido)
+        REFERENCES public.pedidos (cod_ped) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
